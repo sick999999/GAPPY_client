@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import NewsView from '../views/NewsView.vue'
 import About from '@/views/About.vue'
 import RECEIPT from '@/views/Receipt.vue'
-import Cart from '@/views/Cart.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,11 +25,6 @@ const router = createRouter({
       path: '/receipt',
       name: 'Receipt',
       component: RECEIPT,
-    },
-    {
-      path: '/cart',
-      name: 'Cart',
-      component: Cart,
     },
   ]
 })

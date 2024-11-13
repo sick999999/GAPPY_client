@@ -1,10 +1,10 @@
 <template>
-   <div class="container-fluid" id="cardContainer">
+  <div class="container-fluid" id="cardContainer">
     <!-- 네비게이션 바 -->
     <nav class="custom-navbar">
       <div class="navbar-container">
         <div class="navbar-group left-group">
-          <div v-if="!isSpeaking">
+          <div v-if="!isSpeaking" lass="spinner-border text-primary" role="status">
             <button class="btn custom-button" @click="startVoiceInteraction">Voice Chat</button>
           </div>
           <div v-else>
@@ -26,9 +26,11 @@
           <div class="sidebar" :class="{ 'open': isSidebarOpen }">
             <button @click="closeSidebar" class="close-btn">&times;</button>
 
-            <h2 class="sidebar-text">You read</h2>
+            <h2 class="sidebar-text">You read<br>------------</h2>
             <ul class="sidebar-text-inner" v-for="(article, idx) in cartArticles" :key="idx">
-              {{ article.title }}
+              <router-link :to="`/news/${article.author}/${article.id}`">
+                ₩ {{ article.title }}
+              </router-link>
             </ul>
 
           </div>
@@ -51,7 +53,7 @@ export default {
       news: news,
       isSidebarOpen: false,
       isSpeaking: false,
-      cart: []
+      cart: [],
     }
   },
 
@@ -62,7 +64,7 @@ export default {
     },
   },
 
-  beforeMount() {
+  updated () {
     if (localStorage.getItem('cart') === null) {
       localStorage.setItem('cart', '[]');
     }
@@ -78,7 +80,7 @@ export default {
     closeSidebar() {
       this.isSidebarOpen = false;
     },
-    beforeMount() {
+    updated() {
       if (localStorage.getItem('cart') === null) {
         localStorage.setItem('cart', '[]');
       }
@@ -100,7 +102,9 @@ export default {
       // 음성 인식을 위한 객체 생성
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
+      
       recognition.lang = 'ko-KR'; // 한국어 설정
+      
 
       recognition.start();
 
@@ -119,14 +123,9 @@ export default {
             // 음성 합성을 통해 응답 읽어주기
             this.speakText(data.message);
           })
-          .catch((error) => {
-            console.error('Error:', error);
-          });
       };
 
-      recognition.onerror = (event) => {
-        console.error('음성 인식 오류:', event.error);
-      };
+     
     },
     speakText(text) {
       this.isSpeaking = true;
@@ -136,8 +135,8 @@ export default {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ko-KR';
       // 필요에 따라 속도와 피치 조절 가능
-      utterance.rate = 1.4;
-      utterance.pitch = 1.2;
+      utterance.rate = 1.3;
+      utterance.pitch = 1;
 
       // 음성 합성 실행
       window.speechSynthesis.speak(utterance);
@@ -145,12 +144,16 @@ export default {
     stopSpeaking() {
       window.speechSynthesis.cancel();
       this.isSpeaking = false;
+      window.speechSynthesis.onend = () => { this.isSpeaking = false; };
+      window.speechSynthesis.speak(utterance);
     }
   }
 }
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Grandiflora+One&family=IBM+Plex+Sans+KR&family=Noto+Serif+KR:wght@200..900&display=swap');
+
 .custom-navbar {
   background-color: white;
   width: 100%;
@@ -160,9 +163,9 @@ export default {
 }
 
 .custom-button {
-  margin-top: 50px;
+  margin-top: 30px;
   min-width: 200px;
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   padding: 0px 0px;
   white-space: nowrap;
   background: none;
@@ -173,27 +176,34 @@ export default {
 
 .title {
   font-size: 4.7rem;
-  letter-spacing: 2.5px;
-  font-weight: bold;
-  font-family: sans-serif;
-  line-height: 105%;
+  letter-spacing: 1px;
+  font-weight: 600;
+  font-family: Georgia;
+  line-height: 115%;
   color: #1f1f1f;
   margin-top: 10px;
+  text-align: left;
 }
 
 .sidebar {
   position: fixed;
   right: -300px;
   /* 초기에는 화면 밖에 위치 */
-  top: 120px;
-  width: 310px;
-  height: 600px;
-  background-color: #f6f6f6;
-  transition: right 0.8s ease-in-out;
+  top: 125px;
+  width: 305px;
+  height: 610px;
+  background-image: url('@/assets/images/receipt2.png');
+  background-position: bottom;
+  /* 이미지가 중앙에 위치 */
+  background-repeat: no-repeat;
+  /* 이미지가 반복되지 않음 */
+  line-height: 100%;
+  transition: right 1s ease-in-out;
   z-index: 1000;
   text-align: left;
-  margin-top: 23px;
-  border-radius: 2%;
+  color: rgb(48, 48, 48);
+  margin-top: 25px;
+  border-radius: 5%;
 }
 
 .sidebar.open {
@@ -203,11 +213,11 @@ export default {
 
 .close-btn {
   position: absolute;
-  top: 10px;
-  right: 50px;
-  font-size: 20px;
-  border: 4.5em solid #848484;
-  border-radius: 15%;
+  top: 20px;
+  right: 55px;
+  font-size: 15px;
+  border: 1px solid #000000;
+  border-radius: 5%;
   background: #888888;
   border: 1px;
   cursor: pointer;
@@ -215,11 +225,16 @@ export default {
 
 .sidebar-text {
   margin-top: 15px;
-  margin-left: px;
-  font-size: 1.1rem;
-  font-family: sans-serif;
+  margin-left: 0px;
+  font-size: 1rem;
+  font-family: Georgia;
   text-align: center;
-
-
 }
+
+.sidebar-text-inner {
+  font-family: "IBM Plex Sans KR", sans-serif;
+  font-size: 1rem;
+  
+}
+
 </style>

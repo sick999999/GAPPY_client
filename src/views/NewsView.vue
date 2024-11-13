@@ -3,17 +3,16 @@
     <div class="divider"></div>
     <h1 class="title">{{ article.title }}</h1>
     <div class="meta">
-    <span class="author">{{ article.author }}</span>
-    <span class="category">{{ article.tags }}</span>
+    <span class="author">[{{ article.author }}]</span>
+    <span class="category">[{{ article.대분야 }}]</span>
     <span class="date">{{ article.date }}</span>    
     </div>
     <div class="content"></div>
-    <img class="img" :src="article.imgUrl" alt="Image">
+    <img class="img" :src='article.imgUrl' alt="Image">
     <p class="content" v-for="(paragraph, idx) in article.content" :key="idx">
       {{ paragraph }}
     </p>
     </div>
-    <!-- <p>기사: {{ article.content }}</p> -->
 </template>
 
 
@@ -24,22 +23,36 @@ import news from '@/assets/news.js';
 export default {
   data() {
     return {
-      article: null,
+      id: parseInt(this.$route.params.id),
     };
   },
-  created() {
-    const id = parseInt(this.$route.params.id); // 라우트 파라미터에서 id를 가져옵니다.
-    this.article = news.find(item => item.id === id); // id에 해당하는 기사를 찾습니다.
+  computed: {
+    article() {
+      // console.log(news.forEach(item => console.log(item.id === this.id) ))
+      return news.find(item => item.id === this.id)
+    }
   },
+  async beforeRouteUpdate(to, from) {
+    // react to route changes...
+    this.id = parseInt(to.params.id)
+  },
+  // ...
 };
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Grandiflora+One&family=Noto+Serif+KR:wght@200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Grandiflora+One&family=IBM+Plex+Sans+KR&family=Noto+Serif+KR:wght@200..900&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: "IBM Plex Sans KR", sans-serif, Georgia;
+  line-height: 150%;
+  letter-spacing: 0px;
+  font-weight: 300;
+  
 }
 
 .container {
@@ -54,7 +67,7 @@ export default {
 }
 
 .title {
-  font-size: 3.2rem;
+  font-size: 3.6rem;
   font-weight: bold;
   margin-bottom: 20px;
   line-height: 1.4;
@@ -63,11 +76,10 @@ export default {
 
 .meta {
   display: flex;
-  align-items: end;
-  gap: 20px;
+  align-items: right;
+  gap: 30px;
   margin-bottom: 30px;
   color: #666;
-  font-size: 1.1rem;
   text-align: left;
 }
 
@@ -76,14 +88,16 @@ export default {
   max-width: 600px;
   height: auto;
   display: block;
-  margin: 0 auto 20px;
+  margin: 0 auto 25px;
 }
 
 .content {
-  font-size: 1.2rem;
-  line-height: 1.8;
+  font-size: 1.25rem;
+  line-height: 1.6;
   color: #333;
   text-align: left;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 .img {
