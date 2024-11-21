@@ -551,7 +551,7 @@ export default {
 .main-title {
   font-size: 48px;
   background: linear-gradient(180deg, #FFFFFF 0%, rgba(255, 255, 255, 0.7) 100%);
-  -webkit-background-clip: text;
+  /* -webkit-background-clip: text; */
   -webkit-text-fill-color: transparent;
   margin-bottom: 20px;
   font-family: 'GmarketSansMedium', sans-serif;
@@ -560,7 +560,7 @@ export default {
 .subtitle {
   font-size: 80px;
   background: linear-gradient(180deg, #E09F3E 0%, rgba(224, 159, 62, 0.7) 100%);
-  -webkit-background-clip: text;
+  /* -webkit-background-clip: text; */
   -webkit-text-fill-color: transparent;
   font-family: 'GmarketSansMedium', sans-serif;
 }

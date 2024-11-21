@@ -103,6 +103,5 @@ export default {
 
 .img {
   width: 800px;
-  align: center;
 }
 </style>
