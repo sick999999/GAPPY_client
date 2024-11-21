@@ -4,12 +4,12 @@
       style="cursor: pointer;">
     <div class="image-container">
       <img class='receipt-paper' src="@/assets/images/receipt2.png" alt="Receipt Image" />
-      <span class="overlay-text">{{ ans }}</span>
+      <span class="overlay-text">{{ ans }} </span>
     </div>
 
     <div class="card-wrapper flex" id="cardWrapper">
 
-      <div class="card" v-for="(article, idx) in news.slice(27, 30)" :key="idx" @click="addToCart(article.id)">
+      <div class="card" v-for="(article, idx) in news.slice(18, 21)" :key="idx" @click="addToCart(article.id)">
         <RouterLink :to="`/news/${article.author}/${article.id}`">
           <div class="card-image">
             <img :src="article.iconimgUrl" alt="Image">
@@ -36,8 +36,24 @@ export default {
     return {
       ans: '',
       news: news,
+
     }
   },
+  mounted() {
+    const cardWrapper = this.$el.querySelector('.card-wrapper');
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-in');
+          observer.unobserve(entry.target); // 애니메이션이 한 번 실행된 후에는 더 이상 감시하지 않음
+        }
+      });
+    }, { threshold: 0.2 }); // 20% 보이면 애니메이션 실행
+
+    observer.observe(cardWrapper);
+  },
+
   computed: {
     cartLabels() {
       const cart = JSON.parse(localStorage.getItem('cart'))
@@ -52,6 +68,14 @@ export default {
 
       this.ans = res.data.message
 
+    },
+    addToCart(articleId) {
+      // cart에 숫자가 없으면 추가한다
+      const cartNews = JSON.parse(localStorage.getItem('cart'))
+      if (!cartNews.includes(articleId)) {
+        cartNews.push(articleId)
+      }
+      localStorage.setItem('cart', JSON.stringify(cartNews))
     },
   }
 }
@@ -73,14 +97,14 @@ export default {
 .overlay-text {
   position: absolute;
   width: 400px;
-  top: 14.5rem;
-  left: 165px;
+  top: 14rem;
+  left: 180px;
   font-family: "IBM Plex Sans KR", sans-serif;
   text-align: left;
-  line-height: 2.1rem;
+  line-height: 2.2rem;
   font-weight: 300;
 
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   color: rgb(87, 87, 87);
   /* 텍스트 색상 */
   font: sans-serif;
@@ -136,10 +160,14 @@ export default {
   text-transform: 0;
   margin-top: 10px;
   display: flex;
-  width: 1548px;
   gap: 25px;
   justify-content: space-evenly;
   width: calc(350px * 3);
+  opacity: 0;
+  /* 처음에는 보이지 않도록 */
+  transform: translateX(100%);
+  /* 화면 왼쪽으로 이동된 상태로 시작 */
+  transition: all 1.1s ease-out;
   /* 카드 너비 + 마진 * 카드 개수 */
 }
 
@@ -167,7 +195,7 @@ export default {
   margin-top: 0px;
   padding: 0px;
   flex-shrink: 0;
-  transition: transform 3s ease ease-in-out;
+  transition: transform 2s ease-out;
   text-align: left;
   gap: 25px;
 
@@ -177,8 +205,8 @@ export default {
   margin-top: 360px;
   margin-bottom: 0px;
   /* 상단에 마진 추가 */
-  margin-left: 34px;
-  line-height: 260%;
+  margin-left: 36px;
+  line-height: 280%;
   letter-spacing: 0px;
 }
 
@@ -195,5 +223,12 @@ export default {
   repeat: no-repeat;
   /* 이미지가 반복되지 않음 */
   opacity: 1;
+}
+
+.card-wrapper.animate-in {
+  opacity: 1;
+  /* 애니메이션 후에 투명도를 원래대로 */
+  transform: translateX(0);
+  /* 화면 안으로 원래 위치로 이동 */
 }
 </style>

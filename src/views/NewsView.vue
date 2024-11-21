@@ -3,16 +3,16 @@
     <div class="divider"></div>
     <h1 class="title">{{ article.title }}</h1>
     <div class="meta">
-    <span class="author">[{{ article.author }}]</span>
-    <span class="category">[{{ article.대분야 }}]</span>
-    <span class="date">{{ article.date }}</span>    
+      <span class="author">[{{ article.author }}]</span>
+      <span class="category">[{{ article.대분야 }}]</span>
+      <span class="date">{{ article.date }}</span>
     </div>
     <div class="content"></div>
     <img class="img" :src='article.imgUrl' alt="Image">
     <p class="content" v-for="(paragraph, idx) in article.content" :key="idx">
       {{ paragraph }}
     </p>
-    </div>
+  </div>
 </template>
 
 
@@ -52,7 +52,7 @@ export default {
   line-height: 150%;
   letter-spacing: 0px;
   font-weight: 300;
-  
+
 }
 
 .container {
@@ -67,11 +67,12 @@ export default {
 }
 
 .title {
-  font-size: 3.6rem;
+  font-size: 3.7rem;
   font-weight: bold;
   margin-bottom: 20px;
   line-height: 1.4;
   text-align: left;
+  font-family: "IBM Plex Sans KR", sans-serif;
 }
 
 .meta {

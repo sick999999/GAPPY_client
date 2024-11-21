@@ -3,49 +3,67 @@
   <!-- 전체 컨테이너 -->
 
   <!-- 네비게이션 바 -->
- 
 
-    <div class="card-wrapper flex" id="cardWrapper">
 
-      <div class="card" v-for="(article, idx) in news.slice(0, 15)" :key="idx" @click="addToCart(article.id)">
-        <RouterLink :to="`/news/${article.author}/${article.id}`">
-          <div class="card-image">
-            <img :src="article.iconimgUrl" alt="Image">
-          </div>
-          <div class="card-text">
-            {{ article.title }}<br>
-            {{ article.author }}<br>
-          </div>
-        </RouterLink>
-      </div>
+  <div class="card-wrapper flex" id="cardWrapper">
+
+    <div class="card" v-for="(article, idx) in pageNews" :key="idx" @click="addToCart(article.id)">
+      <RouterLink :to="`/news/${article.author}/${article.id}`">
+        <div class="card-image">
+          <img :src="article.iconimgUrl" alt="Image">
+        </div>
+        <div class="card-text">
+          {{ article.title }}<br>
+          {{ article.author }}<br>
+        </div>
+      </RouterLink>
     </div>
+  </div>
 
   <footer class="footer">
-    <div style="font-size: 1.05rem">Insta<br> Thread<br> Twitter </div>
+    <div>
+      <button class="pre-next" @click="onNext">Next</button><br>
+      <button class="pre-next" @click="onPrevious">Previous</button>
+    </div>
+
+
     <div style="text-align: center">KOREAN'S FAVORITE NEWS-MARKET<br>
       We Make The Brands You Love<br> From Seoul</div>
-    <div style="text-align: right">ⓒ2024 GAPPY<br> All right reserved<br> </div>
+    <div style="text-align: right">ⓒ2024 GAPPY<br> All right reserved<br></div>
   </footer>
 </template>
 
 <script>
 import news from '@/assets/news.js'
 import _ from 'lodash'
-import { RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router'
 
 export default {
   data() {
     return {
       news: news,
+      page: 1,
       isSidebarOpen: false,
       isSpeaking: false,
       cart: []
     }
   },
-
+  computed: {
+    pageNews() {
+      const start = (this.page - 1) * 10
+      const end = this.page * 10
+      return this.news.slice(start, end)
+    }
+  },
 
 
   methods: {
+    onNext() {
+      if (this.page < 3) this.page++
+    },
+    onPrevious() {
+      if (this.page > 1) this.page--
+    },
     openSidebar() {
       this.isSidebarOpen = true;
     },
@@ -56,10 +74,19 @@ export default {
       this.cart = JSON.parse(localStorage.getItem('cart'))
       // cart에 숫자가 없으면 추가한다
       if (!this.cart.includes(articleId)) {
-        this.cart.push(articleId)
+        this.cart.push(articleId),
+          localStorage.setItem('cart', JSON.stringify(this.cart));
+
+        this.$root.updateCartLength();
       }
-      localStorage.setItem('cart', JSON.stringify(this.cart))
     },
+
+    updateCartLength() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      this.cartLength = cart.length;
+    },
+
+
     startVoiceInteraction() {
       // 음성 인식을 위한 객체 생성
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -109,7 +136,7 @@ export default {
     stopSpeaking() {
       window.speechSynthesis.cancel();
       this.isSpeaking = false;
-    }
+    },
 
   },
 
@@ -117,9 +144,9 @@ export default {
     const container = document.getElementById('cardContainer');
     const cardWrapper = document.getElementById('cardWrapper');
     const cards = document.querySelectorAll('.card');
-    const cardWidth = 450; // 카드 너비 + 마진
+    const cardWidth = 400; // 카드 너비 + 마진
     const totalWidth = cardWidth * 15;
-    const scrollSpeed = 0.7; // 스크롤 속도 조절 변수
+    const scrollSpeed = 0.4; // 스크롤 속도 조절 변수
 
     function updateCardPosition(mouseX) {
       const containerWidth = container.offsetWidth;
@@ -160,7 +187,8 @@ html {
   width: 100%;
   height: 100%;
   background: #ffffff;
-  font-family:  Georgia, 'Times New Roman', Times, serif;;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  ;
   font-weight: 500;
   display: flex;
   flex-direction: column;
@@ -173,9 +201,10 @@ html {
   gap: 0px;
   justify-content: space-evenly;
   transition: transform 3s ease-out;
-  width: calc(450px * 15);
+  width: calc(450px * 10);
   /* 카드 너비 + 마진 * 카드 개수 */
 }
+
 .card {
   width: 300px;
   height: 450px;
@@ -191,7 +220,8 @@ html {
 
   border: 1px solid #ffffff;
   border-radius: 4%;
-  font-family:  Georgia, 'Times New Roman', Times, serif;;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  ;
   font-weight: 500;
   /* font-weight: ; */
   display: flex;
@@ -220,7 +250,7 @@ html {
 }
 
 .card-image img {
-  position: absolute; 
+  position: absolute;
   top: 27px;
   left: 27px;
   width: 190px;
@@ -228,7 +258,7 @@ html {
   size: contain;
   /* 이미지가 카드 크기에 맞게 조정됨 */
   position: top;
-  /* 이미지가 중앙에 위치 */  
+  /* 이미지가 중앙에 위치 */
   repeat: no-repeat;
   /* 이미지가 반복되지 않음 */
   opacity: 1;
@@ -240,7 +270,7 @@ html {
 a {
   color: inherit;
   text-decoration: none;
-  font-family:  'Noto Sans KR';
+  font-family: 'Noto Sans KR';
 }
 
 .footer {
@@ -257,12 +287,12 @@ a {
   font-weight: 0;
   position: fixed;
   bottom: 3rem;
-  z-index: 20;
+  z-index: 1000;
 }
 
 
 .custom-navbar {
-  font-family:  Georgia;
+  font-family: Georgia;
   width: 100%;
   max-width: 100%;
   padding: 0 0px;
@@ -320,5 +350,13 @@ a {
   /* 버튼 텍스트와 맞추기 */
 }
 
-
+.pre-next {
+  font-size: 1.25rem;
+  line-height: 130%;
+  white-space: nowrap;
+  background: none;
+  font-family: georgia;
+  border: none;
+  cursor: pointer;
+}
 </style>

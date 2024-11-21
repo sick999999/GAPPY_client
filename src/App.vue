@@ -4,7 +4,7 @@
     <nav class="custom-navbar">
       <div class="navbar-container">
         <div class="navbar-group left-group">
-          <div v-if="!isSpeaking" lass="spinner-border text-primary" role="status">
+          <div v-if="!isSpeaking" role="status">
             <button class="btn custom-button" @click="startVoiceInteraction">Voice Chat</button>
           </div>
           <div v-else>
@@ -22,16 +22,22 @@
         </router-link>
         <div class="navbar-group right-group">
           <router-link to="/Receipt" class="btn custom-button">Receipt</router-link>
-          <button class="btn custom-button" @click="openSidebar">Cart</button>
-          <div class="sidebar" :class="{ 'open': isSidebarOpen }">
-            <button @click="closeSidebar" class="close-btn">&times;</button>
+          <button class="btn custom-button" @click="openSidebar">Cart [<span style="color: red;">{{ cartLength
+              }}</span>]</button>
+          <div class="sidebar" :class="{ 'open': isSidebarOpen }" @click="closeSidebar">
 
-            <h2 class="sidebar-text">You read<br>------------</h2>
-            <ul class="sidebar-text-inner" v-for="(article, idx) in cartArticles" :key="idx">
+
+
+            <h2 class="sidebar-text">You read</h2>
+            <button class="Cart-clear" @click="clearCart">Cart Clear</button>
+            <ul class="sidebar-text-inner" v-for="(article, idx) in cartArticles.slice(0, 11)" :key="idx">
               <router-link :to="`/news/${article.author}/${article.id}`">
                 ₩ {{ article.title }}
               </router-link>
+
             </ul>
+
+
 
           </div>
         </div>
@@ -54,58 +60,66 @@ export default {
       isSidebarOpen: false,
       isSpeaking: false,
       cart: [],
+      cartLength: [],
     }
   },
 
-  computed: {
-    // 'cart'에 있는 기사만 필터링
-    cartArticles() {
-      return this.news.filter(article => this.cart.includes(article.id));
-    },
-  },
-
-  updated () {
+  beforeMount() {
     if (localStorage.getItem('cart') === null) {
       localStorage.setItem('cart', '[]');
     }
-    // data의 cart를 localstrage 에 저장되어있는 cart 값이랑 동기화
-    this.cart = JSON.parse(localStorage.getItem('cart'));
 
+    this.cart = JSON.parse(localStorage.getItem('cart'));
   },
+
+  updated() {
+    this.cart = JSON.parse(localStorage.getItem('cart'));
+  },
+
+
+
+
+  mounted() {
+    // 음성 인식 객체 초기화
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    this.recognition = new SpeechRecognition();
+    this.recognition.lang = 'ko-KR'; // 한국어 설정
+  },
+
+
 
   methods: {
     openSidebar() {
       this.isSidebarOpen = true;
     },
+
     closeSidebar() {
       this.isSidebarOpen = false;
     },
-    updated() {
-      if (localStorage.getItem('cart') === null) {
-        localStorage.setItem('cart', '[]');
-      }
-      // data의 cart를 localstrage 에 저장되어있는 cart 값이랑 동기화
-      this.cart = JSON.parse(localStorage.getItem('cart'));
 
-    },
     addToCart(articleId) {
-      this.cart = JSON.parse(localStorage.getItem('cart'))
       // cart에 숫자가 없으면 추가한다
       if (!this.cart.includes(articleId)) {
-        this.cart.push(articleId)
+        this.cart.push(articleId);
       }
       localStorage.setItem('cart', JSON.stringify(this.cart))
     },
 
 
+    clearCart() {
+      localStorage.setItem('cart', '[]')
+      this.cart = []
+    },
+
+
     startVoiceInteraction() {
+      this.isSpeaking = true;
+
       // 음성 인식을 위한 객체 생성
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
-      
-      recognition.lang = 'ko-KR'; // 한국어 설정
-      
 
+      recognition.lang = 'ko-KR';
       recognition.start();
 
       recognition.onresult = (event) => {
@@ -124,22 +138,27 @@ export default {
             this.speakText(data.message);
           })
       };
-
-     
     },
+
+    updateCartLength() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const cartLength = cart.length;
+    },
+
     speakText(text) {
-      this.isSpeaking = true;
       // 이전에 재생 중인 음성 합성 중지
       window.speechSynthesis.cancel();
 
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ko-KR';
       // 필요에 따라 속도와 피치 조절 가능
-      utterance.rate = 1.3;
-      utterance.pitch = 1;
+      utterance.rate = 1.6;
+      utterance.pitch = 1.3;
 
       // 음성 합성 실행
       window.speechSynthesis.speak(utterance);
+      this.isSpeaking = false;
+
     },
     stopSpeaking() {
       window.speechSynthesis.cancel();
@@ -147,7 +166,20 @@ export default {
       window.speechSynthesis.onend = () => { this.isSpeaking = false; };
       window.speechSynthesis.speak(utterance);
     }
-  }
+  },
+
+  computed: {
+    // 'cart'에 있는 기사만 필터링
+    cartArticles() {
+      return this.news.filter(article => this.cart.includes(article.id));
+    },
+
+    cartLength() {
+      // cart 배열의 길이를 반환하는 computed 속성
+      return this.cart.length;
+    }
+  },
+
 }
 </script>
 
@@ -175,11 +207,11 @@ export default {
 
 
 .title {
-  font-size: 4.7rem;
-  letter-spacing: 1px;
+  font-size: 4.6rem;
+  letter-spacing: 0px;
   font-weight: 600;
   font-family: Georgia;
-  line-height: 115%;
+  line-height: 120%;
   color: #1f1f1f;
   margin-top: 10px;
   text-align: left;
@@ -191,7 +223,7 @@ export default {
   /* 초기에는 화면 밖에 위치 */
   top: 125px;
   width: 305px;
-  height: 610px;
+  height: 620px;
   background-image: url('@/assets/images/receipt2.png');
   background-position: bottom;
   /* 이미지가 중앙에 위치 */
@@ -202,8 +234,8 @@ export default {
   z-index: 1000;
   text-align: left;
   color: rgb(48, 48, 48);
-  margin-top: 25px;
-  border-radius: 5%;
+  margin-top: 10px;
+  border-radius: 0%;
 }
 
 .sidebar.open {
@@ -214,27 +246,43 @@ export default {
 .close-btn {
   position: absolute;
   top: 20px;
-  right: 55px;
+  right: 60px;
   font-size: 15px;
   border: 1px solid #000000;
   border-radius: 5%;
   background: #888888;
-  border: 1px;
   cursor: pointer;
 }
 
 .sidebar-text {
-  margin-top: 15px;
+  margin-top: 18px;
   margin-left: 0px;
-  font-size: 1rem;
+  font-size: 1.3rem;
   font-family: Georgia;
   text-align: center;
 }
 
 .sidebar-text-inner {
+  margin-top: 33px;
+  line-height: 20%;
   font-family: "IBM Plex Sans KR", sans-serif;
-  font-size: 1rem;
-  
+  font-weight: 300;
+  font-size: 1.1rem;
+
 }
 
+.Cart-clear {
+  position: absolute;
+  margin-top: 500px;
+  margin-left: 115px;
+  color: #535353;
+  border: 0.5px solid #535353;
+  border-radius: 10%;
+  font-size: 15px;
+  padding: 3px;
+}
+
+.custom-button.waiting {
+  cursor: wait; /* 음성 인식 중일 때 커서 모양 변경 */
+}
 </style>

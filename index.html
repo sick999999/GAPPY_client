@@ -13,5 +13,34 @@
     <script type="module" src="/src/main.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
-  </body> 
+  </body>
+  <script>
+    function showNewsContent(id) {
+    // 모든 모달 숨기기
+    const allModals = document.querySelectorAll('.modal');
+    allModals.forEach(modal => {
+        modal.style.display = 'none';
+    });
+
+    // 모든 카드뉴스 모달 숨기기
+    const allCardModals = document.querySelectorAll('.modal-card-content');
+    allCardModals.forEach(modal => {
+        modal.parentElement.style.display = 'none';
+    });
+
+    // 해당 모달 표시
+    const selectedModal = document.getElementById(id);
+    if (selectedModal) {
+        selectedModal.style.display = 'flex';
+    }
+}
+
+// 모달 닫기
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+  </script>
 </html>

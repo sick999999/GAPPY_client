@@ -1,13 +1,11 @@
 <template>
-  
+    <img src='https://imgur.com/4159cZl.png'>
+
 </template>
 
 <script>
-export default {
-
-}
 </script>
 
-<style>
+<style scoped>
 
 </style>
