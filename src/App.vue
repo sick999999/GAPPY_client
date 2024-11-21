@@ -34,11 +34,7 @@
               <router-link :to="`/news/${article.author}/${article.id}`">
                 ₩ {{ article.title }}
               </router-link>
-
             </ul>
-
-
-
           </div>
         </div>
       </div>
@@ -76,17 +72,12 @@ export default {
     this.cart = JSON.parse(localStorage.getItem('cart'));
   },
 
-
-
-
   mounted() {
     // 음성 인식 객체 초기화
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.recognition = new SpeechRecognition();
     this.recognition.lang = 'ko-KR'; // 한국어 설정
   },
-
-
 
   methods: {
     openSidebar() {
@@ -283,6 +274,7 @@ export default {
 }
 
 .custom-button.waiting {
-  cursor: wait; /* 음성 인식 중일 때 커서 모양 변경 */
+  cursor: wait;
+  /* 음성 인식 중일 때 커서 모양 변경 */
 }
 </style>
