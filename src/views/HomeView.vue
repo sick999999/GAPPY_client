@@ -36,7 +36,6 @@
 <script>
 import news from '@/assets/news.js'
 import _ from 'lodash'
-import { RouterLink } from 'vue-router'
 
 export default {
   data() {
@@ -259,7 +258,6 @@ html {
   /* 이미지가 카드 크기에 맞게 조정됨 */
   position: top;
   /* 이미지가 중앙에 위치 */
-  repeat: no-repeat;
   /* 이미지가 반복되지 않음 */
   opacity: 1;
   border: 0px solid #eeeeee;

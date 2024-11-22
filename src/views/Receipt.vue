@@ -28,7 +28,6 @@
 <script>
 import news from '@/assets/news.js';
 import _ from 'lodash'
-import { RouterLink } from 'vue-router';
 import axios from 'axios';
 
 export default {

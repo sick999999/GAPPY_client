@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import NewsView from '@/views/NewsView.vue'
 import About from '@/views/About.vue'
-import RECEIPT from '@/views/Receipt.vue'
+import Receipt from '@/views/Receipt.vue'
 import NaraView from '@/views/NaraView.vue'
 import MinkyungView from '@/views/MinkyungView.vue'
 import SejinView from '@/views/SejinView.vue'
@@ -12,7 +12,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: HomeView
+      component: HomeView,
     },
     {
       path: '/news/sejin/12',
@@ -38,7 +38,7 @@ const router = createRouter({
     {
       path: '/receipt',
       name: 'Receipt',
-      component: RECEIPT,
+      component: Receipt,
     },
   ]
 })
